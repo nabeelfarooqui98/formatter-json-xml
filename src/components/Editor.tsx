@@ -83,7 +83,7 @@ export default function Editor({ mode, format, minify, error, clearError, onActi
   const insertSampleJson = useCallback(() => setValue(SAMPLE_JSON), [])
   const insertSampleXml = useCallback(() => setValue(SAMPLE_XML), [])
 
-  useEffect(() => { clearError() }, [value, clearError])
+  // Errors should persist until the user edits the input. We clear on input change instead.
 
   return (
     <div>
@@ -92,7 +92,7 @@ export default function Editor({ mode, format, minify, error, clearError, onActi
         className="area"
         placeholder={mode === 'json' ? 'Paste JSON here…' : 'Paste XML here…'}
         value={value}
-        onChange={(e) => setValue(e.target.value)}
+        onChange={(e) => { setValue(e.target.value); clearError(); }}
       />
 
       <div className="toolbar">
