@@ -1,34 +1,87 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 
+type TabType = 'json' | 'xml'
+
 function App() {
-  const [count, setCount] = useState(0)
+  const [activeTab, setActiveTab] = useState<TabType>('json')
+  const [jsonInput, setJsonInput] = useState('')
+  const [error, setError] = useState('')
+
+  const formatJson = () => {
+    try {
+      setError('')
+      const parsed = JSON.parse(jsonInput)
+      const formatted = JSON.stringify(parsed, null, 2)
+      setJsonInput(formatted)
+    } catch (err) {
+      setError(`Invalid JSON: ${err instanceof Error ? err.message : 'Unknown error'}`)
+    }
+  }
+
+  const minifyJson = () => {
+    try {
+      setError('')
+      const parsed = JSON.parse(jsonInput)
+      const minified = JSON.stringify(parsed)
+      setJsonInput(minified)
+    } catch (err) {
+      setError(`Invalid JSON: ${err instanceof Error ? err.message : 'Unknown error'}`)
+    }
+  }
+
+  const handleJsonChange = (value: string) => {
+    setJsonInput(value)
+    setError('')
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+    <div className="app">
+      <h1>JSON/XML Formatter</h1>
+      
+      <div className="tabs">
+        <button 
+          className={`tab ${activeTab === 'json' ? 'active' : ''}`}
+          onClick={() => setActiveTab('json')}
+        >
+          JSON
         </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+        <button 
+          className={`tab ${activeTab === 'xml' ? 'active' : ''}`}
+          onClick={() => setActiveTab('xml')}
+        >
+          XML
+        </button>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+
+      <div className="tab-content">
+        {activeTab === 'json' && (
+          <div className="json-tab">
+            <textarea
+              className={`json-textarea ${error ? 'error' : ''}`}
+              value={error || jsonInput}
+              onChange={(e) => handleJsonChange(e.target.value)}
+              placeholder="Paste your JSON here..."
+              rows={20}
+            />
+            <div className="buttons">
+              <button onClick={formatJson} className="format-btn">
+                Format
+              </button>
+              <button onClick={minifyJson} className="minify-btn">
+                Minify
+              </button>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'xml' && (
+          <div className="xml-tab">
+            <p>XML formatter coming soon...</p>
+          </div>
+        )}
+      </div>
+    </div>
   )
 }
 
