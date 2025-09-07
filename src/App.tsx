@@ -57,9 +57,14 @@ function App() {
       <div className="tab-content">
         {activeTab === 'json' && (
           <div className="json-tab">
+            {error && (
+              <div className="error-message">
+                {error}
+              </div>
+            )}
             <textarea
               className={`json-textarea ${error ? 'error' : ''}`}
-              value={error || jsonInput}
+              value={jsonInput}
               onChange={(e) => handleJsonChange(e.target.value)}
               placeholder="Paste your JSON here..."
               rows={20}
