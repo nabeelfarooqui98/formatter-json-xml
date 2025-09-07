@@ -1,89 +1,83 @@
-import { useState } from 'react'
-import './App.css'
-
-type TabType = 'json' | 'xml'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import './styles.css'
+import Tabs, { type TabKey } from './components/Tabs'
+import Editor from './components/Editor'
+import { useJsonFormatter } from './hooks/useJsonFormatter'
+import { useXmlFormatter } from './hooks/useXmlFormatter'
 
 function App() {
-  const [activeTab, setActiveTab] = useState<TabType>('json')
-  const [jsonInput, setJsonInput] = useState('')
-  const [error, setError] = useState('')
+  const [active, setActive] = useState<TabKey>('json')
 
-  const formatJson = () => {
-    try {
-      setError('')
-      const parsed = JSON.parse(jsonInput)
-      const formatted = JSON.stringify(parsed, null, 2)
-      setJsonInput(formatted)
-    } catch (err) {
-      setError(`Invalid JSON: ${err instanceof Error ? err.message : 'Unknown error'}`)
-    }
-  }
+  const json = useJsonFormatter()
+  const xml = useXmlFormatter()
 
-  const minifyJson = () => {
-    try {
-      setError('')
-      const parsed = JSON.parse(jsonInput)
-      const minified = JSON.stringify(parsed)
-      setJsonInput(minified)
-    } catch (err) {
-      setError(`Invalid JSON: ${err instanceof Error ? err.message : 'Unknown error'}`)
-    }
-  }
+  const [meta, setMeta] = useState<{ action: string; when: number; ms: number }>({ action: '', when: 0, ms: 0 })
 
-  const handleJsonChange = (value: string) => {
-    setJsonInput(value)
-    setError('')
+  const onActionMeta = useCallback((action: 'Format' | 'Minify' | 'Copy' | 'Clear', ms: number) => {
+    setMeta({ action, when: Date.now(), ms })
+  }, [])
+
+  const relative = useMemo(() => {
+    if (!meta.when || !meta.action) return ''
+    const diff = Math.max(0, Date.now() - meta.when)
+    if (diff < 1000) return 'just now'
+    return `${Math.round(diff / 1000)}s ago`
+  }, [meta])
+
+  useEffect(() => {
+    const saved = localStorage.getItem('theme') as 'light' | 'dark' | null
+    if (saved) document.documentElement.setAttribute('data-theme', saved)
+  }, [])
+
+  const toggleTheme = () => {
+    const current = document.documentElement.getAttribute('data-theme') as 'light' | 'dark' | null
+    const next = current === 'light' ? 'dark' : 'light'
+    document.documentElement.setAttribute('data-theme', next)
+    localStorage.setItem('theme', next)
   }
 
   return (
-    <div className="app">
-      <h1>JSON/XML Formatter</h1>
-      
-      <div className="tabs">
-        <button 
-          className={`tab ${activeTab === 'json' ? 'active' : ''}`}
-          onClick={() => setActiveTab('json')}
-        >
-          JSON
-        </button>
-        <button 
-          className={`tab ${activeTab === 'xml' ? 'active' : ''}`}
-          onClick={() => setActiveTab('xml')}
-        >
-          XML
-        </button>
+    <div className="container">
+      <div className="topbar">
+        <div className="brand">JSON/XML Formatter</div>
+        <div className="actions">
+          <a className="link" href="#" rel="noreferrer">GitHub</a>
+          <button className="theme-toggle" onClick={toggleTheme}>Theme</button>
+        </div>
       </div>
 
-      <div className="tab-content">
-        {activeTab === 'json' && (
-          <div className="json-tab">
-            {error && (
-              <div className="error-message">
-                {error}
-              </div>
-            )}
-            <textarea
-              className={`json-textarea ${error ? 'error' : ''}`}
-              value={jsonInput}
-              onChange={(e) => handleJsonChange(e.target.value)}
-              placeholder="Paste your JSON here..."
-            />
-            <div className="buttons">
-              <button onClick={formatJson} className="format-btn">
-                Format
-              </button>
-              <button onClick={minifyJson} className="minify-btn">
-                Minify
-              </button>
-            </div>
-          </div>
+      <div className="card">
+        <Tabs active={active} onChange={setActive} />
+
+        {active === 'json' ? (
+          <Editor
+            mode="json"
+            format={json.format}
+            minify={json.minify}
+            error={json.error}
+            clearError={() => json.setError('')}
+            onActionMeta={onActionMeta}
+          />
+        ) : (
+          <Editor
+            mode="xml"
+            format={xml.format}
+            minify={xml.minify}
+            error={xml.error}
+            clearError={() => xml.setError('')}
+            onActionMeta={onActionMeta}
+          />
         )}
 
-        {activeTab === 'xml' && (
-          <div className="xml-tab">
-            <p>XML formatter coming soon...</p>
-          </div>
-        )}
+        <div className="status-strip">
+          <div>Tab: {active.toUpperCase()}</div>
+          {meta.action && (
+            <div>Last: {meta.action} · {relative}</div>
+          )}
+          {meta.action && (
+            <div>Render: {Math.round(meta.ms)} ms</div>
+          )}
+        </div>
       </div>
     </div>
   )

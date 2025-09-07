@@ -1,4 +1,52 @@
-# React + TypeScript + Vite
+# JSON/XML Formatter
+
+Modern, lightweight JSON/XML formatter built with React + TypeScript + Vite using plain CSS (no external UI libs). Supports dark/light themes, keyboard shortcuts, copy to clipboard, error handling, and performance/status info.
+
+## Features
+
+- JSON and XML tabs with keyboard switching (Ctrl+1/Ctrl+2)
+- One textarea for input/output with monospace font
+- Actions: Format, Minify, Copy, Clear
+- Inline error alerts for parse/format errors
+- Copy toast (auto hides)
+- Character and line counters
+- Status strip: current tab, last action time, render time (ms)
+- Dark/light themes with system default and manual toggle (persisted)
+- Accessible focus states, AA contrast
+
+## Keyboard Shortcuts
+
+- Ctrl/Cmd + Enter → Format
+- Ctrl/Cmd + Shift + Enter → Minify
+- Ctrl/Cmd + L → Clear (prevents default)
+- Ctrl/Cmd + C (when textarea focused) → Copy
+- Ctrl + 1 → JSON tab
+- Ctrl + 2 → XML tab
+
+## Development
+
+Install dependencies and run the dev server:
+
+```bash
+npm i
+npm run dev
+```
+
+## Build
+
+```bash
+npm run build
+```
+
+The output is generated in `dist/`.
+
+## Deploy
+
+Vercel auto-detects Vite projects:
+
+- Build Command: `npm run build`
+- Output Directory: `dist/`
+
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
