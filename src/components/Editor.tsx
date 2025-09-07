@@ -110,8 +110,12 @@ export default function Editor({ mode, format, minify, error, clearError, onActi
       )}
 
       <div className="helper-links">
-        <a href="#" onClick={(e) => { e.preventDefault(); insertSampleJson() }}>Sample JSON</a>
-        <a href="#" onClick={(e) => { e.preventDefault(); insertSampleXml() }}>Sample XML</a>
+        {mode === 'json' && (
+          <a href="#" onClick={(e) => { e.preventDefault(); insertSampleJson() }}>Sample JSON</a>
+        )}
+        {mode === 'xml' && (
+          <a href="#" onClick={(e) => { e.preventDefault(); insertSampleXml() }}>Sample XML</a>
+        )}
       </div>
 
       <Toast message="Copied!" show={showToast} />
