@@ -67,7 +67,6 @@ function App() {
               value={jsonInput}
               onChange={(e) => handleJsonChange(e.target.value)}
               placeholder="Paste your JSON here..."
-              rows={20}
             />
             <div className="buttons">
               <button onClick={formatJson} className="format-btn">
