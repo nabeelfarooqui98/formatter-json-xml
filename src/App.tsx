@@ -41,7 +41,7 @@ function App() {
       <div className="topbar">
         <div className="brand">JSON/XML Formatter</div>
         <div className="actions">
-          <a className="link" href="#" rel="noreferrer">GitHub</a>
+          <a className="link" href="https://github.com/nabeelfarooqui98/formatter-json-xml" target="_blank" rel="noreferrer">GitHub</a>
           <button className="theme-toggle" onClick={toggleTheme}>Theme</button>
         </div>
       </div>
